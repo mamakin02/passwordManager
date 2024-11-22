@@ -1,10 +1,12 @@
 import sys
 
 from PyQt6 import uic
-from auth import get_db_connection, check_user_exists
+from PyQt6.QtWidgets import QApplication, QMessageBox, QWidget
+
+from auth import AuthManager, check_user_exists, get_db_connection
+from auth_ui.db_utils import get_user_id
+
 from .registration_widget import Ui_Registration
-from auth import AuthManager
-from PyQt6.QtWidgets import QApplication, QWidget, QMessageBox
 
 
 class RegisrMenu(QWidget, Ui_Registration):
@@ -36,7 +38,7 @@ class RegisrMenu(QWidget, Ui_Registration):
 
             self.close()
             from selection_menu import SelectionMenu
-            self.selection_menu = SelectionMenu()
+            self.selection_menu = SelectionMenu(id=get_user_id(username), username=username)
             self.selection_menu.show()
         else:
             QMessageBox.critical(self, 'Ошибка', 'Неправильное имя пользователя или пароль')

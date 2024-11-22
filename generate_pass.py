@@ -1,16 +1,17 @@
-import sys
 import random
 import string
+import sys
 
-from zxcvbn import zxcvbn
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QWidget, QInputDialog, QMessageBox
+from PyQt6.QtWidgets import QApplication, QInputDialog, QMessageBox, QWidget
+from zxcvbn import zxcvbn
+
 from table_passwords import DataBase
 from ui_files.generate_widget import Ui_GenerationPassword
 
 
 class GeneratePassword(QWidget, Ui_GenerationPassword):
-    def __init__(self):
+    def __init__(self, id, username):
         super().__init__()
         uic.loadUi('ui_files/generation_password.ui', self)
         self.setWindowTitle('Генератор паролей')
@@ -30,7 +31,14 @@ class GeneratePassword(QWidget, Ui_GenerationPassword):
         self.lenghtSlider.valueChanged.connect(self.select_lenght)
         self.btnGenerate.clicked.connect(self.generate_password)
         self.btnBack.clicked.connect(self.back_event)
-        self.btnSave.clicked.connect(self.save_password)
+
+        self.id = id
+        self.username = username
+
+        if (self.id is not None) and (self.username is not None):
+            self.btnSave.clicked.connect(self.save_password)
+        else:
+            self.btnSave.hide()
 
         # по умолчанию выключены все чекбоксы
         self.checkUpper.setChecked(False)
@@ -38,7 +46,7 @@ class GeneratePassword(QWidget, Ui_GenerationPassword):
         self.checkDigits.setChecked(False)
         self.checkSymbols.setChecked(False)
 
-        self.db = DataBase()
+        self.db = DataBase(self.id, self.username)
 
     # функция для выбора длины пароля
     def select_lenght(self):
@@ -111,7 +119,7 @@ class GeneratePassword(QWidget, Ui_GenerationPassword):
     def back_event(self):
         from selection_menu import SelectionMenu
         self.hide()
-        self.selection_menu = SelectionMenu()
+        self.selection_menu = SelectionMenu(self.id, self.username)
         self.selection_menu.show()
 
     def save_password(self):
@@ -126,23 +134,9 @@ class GeneratePassword(QWidget, Ui_GenerationPassword):
         if not password:
             return
 
-        # окно для ввода логина
-        username, ok = QInputDialog.getText(self, 'Сохранение пароля', 'Введите логин: ')
-        # получаем id пользователя
-        if ok and username:
-            user_id = self.db.get_user_id(username)
-        # если пользователь не найден
-
-        if not user_id:
-            QMessageBox.critical(self, 'Ошибка', 'Пользователь не найден')
-            return
-
         # сохраняем пароль
-        self.db.add_password(user_id, username, password)
-
-        # если пользователь найден
-        if user_id:
-            QMessageBox.information(self, 'Успех', 'Пароль сохранен')
+        self.db.add_password(password)
+        QMessageBox.information(self, 'Успех', 'Пароль сохранен')
 
         self.hide()
         self.db.show()

@@ -1,8 +1,8 @@
 import sys
 
-from PyQt6 import uic
-from PyQt6 import QtGui
-from PyQt6.QtWidgets import QApplication, QWidget, QMessageBox
+from PyQt6 import QtGui, uic
+from PyQt6.QtWidgets import QApplication, QMessageBox, QWidget
+
 from ui_files.home_widget import Ui_HomePage
 
 

@@ -1,6 +1,6 @@
 import bcrypt
 
-from auth_ui.db_utils import get_db_connection, check_user_exists
+from auth_ui.db_utils import check_user_exists, get_db_connection
 
 
 class AuthManager:
