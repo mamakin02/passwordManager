@@ -1,10 +1,12 @@
 import sys
 
 from PyQt6 import uic
-from .login_widget import Ui_Login
+from PyQt6.QtWidgets import QApplication, QMessageBox, QWidget
+
 from auth import AuthManager
-from auth_ui.db_utils import get_db_connection, check_user_exists
-from PyQt6.QtWidgets import QApplication, QWidget, QMessageBox
+from auth_ui.db_utils import check_user_exists, get_db_connection, get_user_id
+
+from .login_widget import Ui_Login
 
 
 class LoginMenu(QWidget, Ui_Login):
@@ -38,11 +40,12 @@ class LoginMenu(QWidget, Ui_Login):
 
         # выполнение входа
         if AuthManager.login(username, password):
-            QMessageBox.information(self, 'Успешно', 'Вы успешно вошли в аккаунт')
-
             self.close()
             from selection_menu import SelectionMenu
-            self.selection_menu = SelectionMenu()
+
+            id = get_user_id(username)
+
+            self.selection_menu = SelectionMenu(id, username)
             self.selection_menu.show()
         else:
             QMessageBox.critical(self, 'Ошибка', 'Неправильное имя пользователя или пароль')

@@ -1,14 +1,15 @@
 import sys
 
-from zxcvbn import zxcvbn
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QWidget
+from zxcvbn import zxcvbn
+
 from ui_files.grade_widget import Ui_PasswordGrade
 
 
 class GradePassword(QWidget, Ui_PasswordGrade):
 
-    def __init__(self):
+    def __init__(self, id, username):
         super().__init__()
         uic.loadUi('ui_files/password_grade.ui', self)
         self.setWindowTitle('Оценка Пароля')
@@ -18,6 +19,9 @@ class GradePassword(QWidget, Ui_PasswordGrade):
         # подключаем сигналы кнопки
         self.btnGrade.clicked.connect(self.password_grade)
         self.btnBack.clicked.connect(self.back_event)
+
+        self.id = id
+        self.username = username
 
     def password_grade(self):
         """ функция для оценки пароля
@@ -55,7 +59,7 @@ class GradePassword(QWidget, Ui_PasswordGrade):
     def back_event(self):
         from selection_menu import SelectionMenu
         self.hide()
-        self.selection_menu = SelectionMenu()
+        self.selection_menu = SelectionMenu(self.id, self.username)
         self.selection_menu.show()
 
 
